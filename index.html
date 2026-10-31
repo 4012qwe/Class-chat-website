@@ -1,8 +1,351 @@
-<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Reliable intelligence</title><style>:root{--bg:#f6f8fa;--card:#fff;--text:#1f2328;--muted:#656d76;--border:#d0d7de;--primary:#1f883d;--phover:#1a7f37;--danger:#cf222e;--input:#fff;--sec:#f6f8fa;--link:#0969da}[data-theme="dark"]{--bg:#0d1117;--card:#161b22;--text:#c9d1d9;--muted:#8b949e;--border:#30363d;--primary:#238636;--phover:#2ea043;--danger:#da3633;--input:#0d1117;--sec:#21262d;--link:#58a6ff}*{box-sizing:border-box;transition:background .2s,color .2s;-webkit-tap-highlight-color:transparent}body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;padding:15px;margin:0;display:flex;flex-direction:column;align-items:center;min-height:100vh}.container{width:100%;max-width:420px;margin-top:5vh}.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}.brand{font-size:17px;font-weight:700;white-space:nowrap}.tools{display:flex;gap:8px;align-items:center}select{padding:6px;border-radius:6px;border:1px solid var(--border);background:var(--sec);color:var(--text);font-size:13px;outline:none;max-width:90px}.icon{background:var(--sec);border:1px solid var(--border);color:var(--text);padding:6px 10px;border-radius:6px;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center}.icon:active{background:var(--border)}.card{background:var(--card);padding:24px;border-radius:8px;border:1px solid var(--border);box-shadow:0 4px 12px rgba(0,0,0,.05)}h2{margin:0 0 6px;font-size:20px;font-weight:600;text-align:center}.sub{text-align:center;color:var(--muted);font-size:13px;margin-bottom:20px;min-height:38px}.field-label{display:block;margin-bottom:6px;color:var(--muted);font-size:13px}input[type="email"],input[type="password"]{width:100%;padding:12px;margin-bottom:16px;background:var(--input);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:15px;outline:none}input:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(31,136,61,.15)}.btn{width:100%;padding:12px;background:var(--primary);color:#fff;border:none;border-radius:6px;font-size:15px;font-weight:600;cursor:pointer}.btn:active{background:var(--phover)}.btn:disabled{opacity:.6;cursor:not-allowed}.links{display:flex;justify-content:space-between;margin-top:16px}.link{background:none;border:none;color:var(--link);font-size:13px;padding:5px 0;cursor:pointer}.guest-row{text-align:center;margin-top:16px;padding-top:16px;border-top:1px dashed var(--border)}.guest-btn{background:none;border:none;color:var(--muted);font-size:13px;cursor:pointer;text-decoration:underline}.agree{display:flex;align-items:flex-start;gap:8px;margin-top:16px;font-size:13px;color:var(--muted);line-height:1.5}.agree input{margin-top:3px;width:16px;height:16px}.agree button{background:none;border:none;color:var(--link);padding:0;font-size:13px;cursor:pointer}#msg,#fmsg,#umsg{text-align:center;margin-top:12px;font-size:13px;min-height:18px}.msg-err{color:var(--danger)}.msg-suc{color:var(--primary)}.msg-info{color:var(--muted)}.hidden{display:none!important}#toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-120%);background:var(--danger);color:#fff;padding:10px 24px;border-radius:6px;font-size:14px;opacity:0;transition:all .3s;z-index:999;max-width:90%;text-align:center}#toast.show{transform:translateX(-50%) translateY(0);opacity:1}</style></head><body><div id="toast"></div><div class="container"><div class="top"><div class="brand">Reliable intelligence</div><div class="tools"><select id="lang" onchange="setLang(this.value)" aria-label="Language"><option value="zh">中文</option><option value="en">English</option><option value="ja">日本語</option><option value="de">Deutsch</option></select><button type="button" class="icon" id="themeBtn" onclick="theme()" title="切换主题">🌙</button></div></div><div id="auth" class="card"><h2 id="title" data-i18n="title">登录系统</h2><div class="sub" id="sub" data-i18n="sub">欢迎回来，请输入您的账户信息</div><label class="field-label" for="email" data-i18n="ph_email">邮箱地址</label><input type="email" id="email" placeholder="邮箱地址" data-i18n-ph="ph_email" autocomplete="email"><label class="field-label" for="pass" data-i18n="ph_pass">密码</label><input type="password" id="pass" placeholder="密码" data-i18n-ph="ph_pass" autocomplete="current-password"><button type="button" class="btn" id="btn" onclick="auth()" data-i18n="btn">登 录</button><div class="links"><button type="button" class="link" id="switch" onclick="toggleMode()" data-i18n="switch">没有账号？去注册</button><button type="button" class="link" id="forgot" onclick="showForgot()" data-i18n="forgot">忘记密码？</button></div><div class="guest-row"><button type="button" class="guest-btn" onclick="guestLogin()" data-i18n="guest">访客直接登录</button></div><div class="agree hidden" id="agreeBox"><input type="checkbox" id="chk"><div><span data-i18n="ag1">我已阅读并同意</span><button type="button" onclick="showModal('disclaimer')" data-i18n="disclaimer">《免责声明》</button><span data-i18n="ag2">与</span><button type="button" onclick="showModal('privacy')" data-i18n="privacy">《隐私政策》</button><span data-i18n="ag3">。本系统仅供娱乐与学习交流使用。</span></div></div><div id="msg"></div></div><div id="resetSec" class="card hidden"><h2 data-i18n="rtitle2">找回密码</h2><div class="sub" data-i18n="rsub2">输入您注册时的邮箱，我们将发送重置链接</div><label class="field-label" for="remail" data-i18n="ph_email">邮箱地址</label><input type="email" id="remail" placeholder="邮箱地址" data-i18n-ph="ph_email" autocomplete="email"><button type="button" class="btn" id="rbtn" onclick="sendReset()" data-i18n="send">发送重置邮件</button><div class="links" style="justify-content:center"><button type="button" class="link" onclick="back()" data-i18n="back">返回登录</button></div><div id="fmsg"></div></div><div id="updateSec" class="card hidden"><h2 data-i18n="utitle">设置新密码</h2><div class="sub" data-i18n="usub">请输入新的账户密码</div><label class="field-label" for="newPass" data-i18n="newpass">新密码</label><input type="password" id="newPass" placeholder="新密码" data-i18n-ph="newpass" autocomplete="new-password"><label class="field-label" for="confirmPass" data-i18n="confirmpass">确认密码</label><input type="password" id="confirmPass" placeholder="确认密码" data-i18n-ph="confirmpass" autocomplete="new-password"><button type="button" class="btn" id="ubtn" onclick="updatePassword()" data-i18n="update">更新密码</button><div id="umsg"></div></div></div><script src="https://unpkg.com/@supabase/supabase-js@2.49.1"></script><script>const T={zh:{title:"登录系统",sub:"欢迎回来，请输入您的账户信息",rtitle:"注册账号",rsub:"创建您的专属账户",ph_email:"邮箱地址",ph_pass:"密码",btn:"登 录",rbtn:"注 册",switch:"没有账号？去注册",slogin:"已有账号？去登录",forgot:"忘记密码？",guest:"访客直接登录",guest_suc:"访客登录成功！",rtitle2:"找回密码",rsub2:"输入您注册时的邮箱，我们将发送重置链接",send:"发送重置邮件",back:"返回登录",utitle:"设置新密码",usub:"请输入新的账户密码",newpass:"新密码",confirmpass:"确认密码",update:"更新密码",ag1:"我已阅读并同意",ag2:"与",ag3:"。本系统仅供娱乐与学习交流使用。",disclaimer:"《免责声明》",privacy:"《隐私政策》",disclaimerText:"免责声明：本系统仅供技术演示、娱乐和学习交流使用。",privacyText:"隐私政策：本系统仅收集邮箱地址，用于账户登录、注册和密码重置。",e_empty:"请输入邮箱和密码",e_email:"邮箱格式不正确",e_pass:"密码至少6位",e_agree:"请勾选同意免责声明",e_confirm:"两次输入的密码不一致",p_ing:"处理中...",s_login:"登录成功！",s_reg:"注册成功，请去邮箱验证。",s_sent:"重置链接已发送",s_updated:"密码更新成功，请重新登录。",load_err:"网络组件加载失败，请检查网络连接",auth_err:"邮箱或密码错误",already:"该邮箱可能已经注册"},en:{title:"Sign In",sub:"Welcome back",rtitle:"Sign Up",rsub:"Create account",ph_email:"Email",ph_pass:"Password",btn:"Sign In",rbtn:"Sign Up",switch:"No account? Sign up",slogin:"Have account? Sign in",forgot:"Forgot password?",guest:"Login as Guest",guest_suc:"Guest login successful!",rtitle2:"Reset Password",rsub2:"Enter email for reset link",send:"Send Reset Email",back:"Back",utitle:"Set New Password",usub:"Enter your new password",newpass:"New password",confirmpass:"Confirm password",update:"Update Password",ag1:"I agree to the",ag2:"and",ag3:".",disclaimer:"Disclaimer",privacy:"Privacy Policy",disclaimerText:"Disclaimer: This system is for demonstration, entertainment and learning only.",privacyText:"Privacy Policy: Only email addresses are collected for authentication and password reset.",e_empty:"Enter email and password",e_email:"Invalid email",e_pass:"Password must be at least 6 characters",e_agree:"Please agree to the disclaimer",e_confirm:"Passwords do not match",p_ing:"Processing...",s_login:"Login successful!",s_reg:"Registered! Check your email.",s_sent:"Reset link sent",s_updated:"Password updated. Please sign in again.",load_err:"Network component failed to load",auth_err:"Invalid email or password",already:"This email may already be registered"},ja:{title:"ログイン",sub:"おかえりなさい",rtitle:"新規登録",rsub:"アカウント作成",ph_email:"メール",ph_pass:"パスワード",btn:"ログイン",rbtn:"登録",switch:"アカウントなし？登録",slogin:"アカウントあり？ログイン",forgot:"パスワード忘れ？",guest:"ゲストとしてログイン",guest_suc:"ゲストログイン成功！",rtitle2:"パスワード再設定",rsub2:"メールを入力",send:"メール送信",back:"戻る",utitle:"新しいパスワード",usub:"新しいパスワードを入力",newpass:"新しいパスワード",confirmpass:"パスワード確認",update:"更新",ag1:"同意する",ag2:"と",ag3:"。",disclaimer:"免責事項",privacy:"プライバシー",disclaimerText:"免責事項：本システムはデモと学習目的です。",privacyText:"プライバシー：認証とパスワード再設定のためメールのみ収集します。",e_empty:"入力してください",e_email:"無効なメール",e_pass:"6文字以上必要です",e_agree:"同意が必要です",e_confirm:"パスワードが一致しません",p_ing:"処理中...",s_login:"ログイン成功！",s_reg:"登録完了。メールを確認してください。",s_sent:"送信しました",s_updated:"パスワードを更新しました。",load_err:"ネットワークエラー",auth_err:"メールまたはパスワードが正しくありません",already:"このメールは登録済みの可能性があります"},de:{title:"Anmelden",sub:"Willkommen",rtitle:"Registrieren",rsub:"Konto erstellen",ph_email:"E-Mail",ph_pass:"Passwort",btn:"Anmelden",rbtn:"Registrieren",switch:"Kein Konto? Registrieren",slogin:"Konto vorhanden? Anmelden",forgot:"Passwort vergessen?",guest:"Als Gast anmelden",guest_suc:"Gast-Anmeldung erfolgreich!",rtitle2:"Passwort zurücksetzen",rsub2:"E-Mail eingeben",send:"E-Mail senden",back:"Zurück",utitle:"Neues Passwort",usub:"Neues Passwort eingeben",newpass:"Neues Passwort",confirmpass:"Passwort bestätigen",update:"Passwort aktualisieren",ag1:"Ich stimme",ag2:"und",ag3:" zu.",disclaimer:"Haftungsausschluss",privacy:"Datenschutz",disclaimerText:"Haftungsausschluss: Nur für Demo, Unterhaltung und Lernzwecke.",privacyText:"Datenschutz: Für Authentifizierung und Passwortzurücksetzung wird nur die E-Mail gespeichert.",e_empty:"E-Mail und Passwort eingeben",e_email:"Ungültige E-Mail",e_pass:"Mindestens 6 Zeichen",e_agree:"Bitte zustimmen",e_confirm:"Passwörter stimmen nicht überein",p_ing:"Verarbeitung...",s_login:"Erfolgreich angemeldet!",s_reg:"Registriert. E-Mail prüfen.",s_sent:"Link gesendet",s_updated:"Passwort aktualisiert.",load_err:"Netzwerkfehler",auth_err:"E-Mail oder Passwort falsch",already:"Diese E-Mail ist möglicherweise bereits registriert"}};let savedLang=localStorage.getItem("lang");let cur=T[savedLang]?savedLang:"zh";let isLogin=true;let supa=null;const SUPABASE_URL="https://scgmqocuqvqvyjfiulhs.supabase.co";const SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNjZ21xb2N1cXZxdnlqZml1bGhzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM0MjI4MTksImV4cCI6MjEwODk5ODgxOX0.ICnjyfyYOgU840L_inw3nDiXjH6of3gk6-6V2ETNypo";const $=id=>document.getElementById(id);function init(){const currentTheme=localStorage.getItem("theme")||"light";document.documentElement.setAttribute("data-theme",currentTheme);$("themeBtn").textContent=currentTheme==="light"?"🌙":"☀️";$("lang").value=cur;setLang(cur);try{if(window.supabase){supa=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);supa.auth.onAuthStateChange((event)=>{if(event==="PASSWORD_RECOVERY"){showUpdatePassword()}});}}catch(error){console.error(error)}if(!supa){showToast(T[cur].load_err)}}
-window.addEventListener("load",init);function theme(){const next=document.documentElement.getAttribute("data-theme")==="light"?"dark":"light";document.documentElement.setAttribute("data-theme",next);localStorage.setItem("theme",next);$("themeBtn").textContent=next==="light"?"🌙":"☀️"}function setLang(language){if(!T[language])language="zh";cur=language;localStorage.setItem("lang",language);const dictionary=T[cur];document.querySelectorAll("[data-i18n]").forEach(element=>{const key=element.dataset.i18n;if(dictionary[key]){element.textContent=dictionary[key]}});document.querySelectorAll("[data-i18n-ph]").forEach(element=>{const key=element.dataset.i18nPh;if(dictionary[key]){element.placeholder=dictionary[key]}});updateUI()}function updateUI(){const dictionary=T[cur];$("title").textContent=isLogin?dictionary.title:dictionary.rtitle;$("sub").textContent=isLogin?dictionary.sub:dictionary.rsub;$("btn").textContent=isLogin?dictionary.btn:dictionary.rbtn;$("switch").textContent=isLogin?dictionary.switch:dictionary.slogin;$("forgot").style.display=isLogin?"block":"none"}function toggleMode(){isLogin=!isLogin;$("pass").value="";$("chk").checked=false;$("msg").textContent="";$("agreeBox").classList.toggle("hidden",isLogin);updateUI()}function showToast(message){const toast=$("toast");toast.textContent=message;toast.classList.add("show");window.clearTimeout(showToast.timer);showToast.timer=window.setTimeout(()=>{toast.classList.remove("show")},3000)}function showModal(type){const dictionary=T[cur];const content=type==="privacy"?dictionary.privacyText:dictionary.disclaimerText;const overlay=document.createElement("div");overlay.style.cssText=`position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000;display:flex;align-items:center;justify-content:center;`;const box=document.createElement("div");box.style.cssText=`background:var(--card);color:var(--text);padding:24px;border-radius:8px;max-width:90%;max-height:80vh;overflow:auto;font-size:14px;line-height:1.6;`;const text=document.createElement("div");text.textContent=content;text.style.marginBottom="16px";const closeButton=document.createElement("button");closeButton.textContent="OK";closeButton.style.cssText=`padding:8px 20px;background:var(--primary);color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:14px;`;closeButton.onclick=()=>overlay.remove();box.appendChild(text);box.appendChild(closeButton);overlay.appendChild(box);overlay.onclick=event=>{if(event.target===overlay){overlay.remove()}};document.body.appendChild(overlay)}function setMsg(id,text,type){const element=$(id);element.textContent=text;element.className="msg-"+type}function isValidEmail(email){return/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)}function getAuthError(error){const dictionary=T[cur];const code=error&&error.code?error.code:"";if(code==="invalid_credentials"||code==="invalid_grant"){return dictionary.auth_err}if(code==="user_already_exists"||code==="user_already_registered"){return dictionary.already}return error?.message||dictionary.load_err}
-async function auth(){const email=$("email").value.trim();const password=$("pass").value;const dictionary=T[cur];const button=$("btn");if(!email||!password){setMsg("msg",dictionary.e_empty,"err");return}if(!isValidEmail(email)){setMsg("msg",dictionary.e_email,"err");return}if(password.length<6){setMsg("msg",dictionary.e_pass,"err");return}if(!isLogin&&!$("chk").checked){setMsg("msg",dictionary.e_agree,"err");return}if(!supa){setMsg("msg",dictionary.load_err,"err");return}button.disabled=true;setMsg("msg",dictionary.p_ing,"info");try{let result;if(isLogin){result=await supa.auth.signInWithPassword({email,password})}else{result=await supa.auth.signUp({email,password})}if(result.error){setMsg("msg",getAuthError(result.error),"err");return}if(isLogin){setMsg("msg",dictionary.s_login,"suc");showToast(dictionary.s_login);}else{setMsg("msg",dictionary.s_reg,"suc")}}catch(error){console.error(error);setMsg("msg",getAuthError(error),"err")}finally{button.disabled=false}}
-async function guestLogin(){const dictionary=T[cur];if(!supa){setMsg("msg",dictionary.load_err,"err");return}setMsg("msg",dictionary.p_ing,"info");try{const{data,error}=await supa.auth.signInAnonymously();if(error){setMsg("msg",error.message,"err")}else{setMsg("msg",dictionary.guest_suc,"suc");showToast(dictionary.guest_suc);}}catch(error){console.error(error);setMsg("msg",error.message,"err")}}
-function showForgot(){$("auth").classList.add("hidden");$("updateSec").classList.add("hidden");$("resetSec").classList.remove("hidden");$("remail").value=$("email").value.trim();$("fmsg").textContent=""}function back(){$("resetSec").classList.add("hidden");$("updateSec").classList.add("hidden");$("auth").classList.remove("hidden");$("remail").value="";$("fmsg").textContent="";$("umsg").textContent=""}
-async function sendReset(){const email=$("remail").value.trim();const dictionary=T[cur];const button=$("rbtn");if(!email){setMsg("fmsg",dictionary.e_empty,"err");return}if(!isValidEmail(email)){setMsg("fmsg",dictionary.e_email,"err");return}if(!supa){setMsg("fmsg",dictionary.load_err,"err");return}button.disabled=true;setMsg("fmsg",dictionary.p_ing,"info");try{const redirectUrl=window.location.href.split("#")[0];const{error}=await supa.auth.resetPasswordForEmail(email,{redirectTo:redirectUrl});if(error){setMsg("fmsg",getAuthError(error),"err")}else{setMsg("fmsg",dictionary.s_sent,"suc")}}catch(error){console.error(error);setMsg("fmsg",getAuthError(error),"err")}finally{button.disabled=false}}
-function showUpdatePassword(){$("auth").classList.add("hidden");$("resetSec").classList.add("hidden");$("updateSec").classList.remove("hidden");$("newPass").value="";$("confirmPass").value="";$("umsg").textContent=""}
-async function updatePassword(){const newPassword=$("newPass").value;const confirmPassword=$("confirmPass").value;const dictionary=T[cur];const button=$("ubtn");if(newPassword.length<6){setMsg("umsg",dictionary.e_pass,"err");return}if(newPassword!==confirmPassword){setMsg("umsg",dictionary.e_confirm,"err");return}if(!supa){setMsg("umsg",dictionary.load_err,"err");return}button.disabled=true;setMsg("umsg",dictionary.p_ing,"info");try{const{error}=await supa.auth.updateUser({password:newPassword});if(error){setMsg("umsg",getAuthError(error),"err");return}await supa.auth.signOut();setMsg("umsg",dictionary.s_updated,"suc");window.setTimeout(()=>{$("updateSec").classList.add("hidden");$("auth").classList.remove("hidden")},1200)}catch(error){console.error(error);setMsg("umsg",getAuthError(error),"err")}finally{button.disabled=false}}</script></body></html>
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Reliable App</title><style>
+:root{--bg:#f2f2f2;--card:#fff;--text:#111;--muted:#8a8a8a;--border:#e5e5e5;--primary:#07c160;--danger:#fa5151;--link:#576b95;--chat:#ededed;--wb:#ff8200}
+[data-theme=dark]{--bg:#111;--card:#1c1c1c;--text:#e5e5e5;--muted:#9a9a9a;--border:#2c2c2c;--chat:#111}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,"PingFang SC",sans-serif;margin:0;height:100vh;height:100dvh;overflow:hidden}
+.hidden{display:none!important}.muted{color:var(--muted)}
+input,textarea,select{width:100%;padding:10px;border:1px solid var(--border);border-radius:6px;background:var(--card);color:var(--text);outline:none;font-size:14px}
+textarea{resize:none;min-height:70px}button{border:none;cursor:pointer;font-size:14px}
+.btn{background:var(--primary);color:#fff;padding:12px;border-radius:6px;width:100%}
+.btn.sm{width:auto;padding:8px 14px}.btn.ghost{background:transparent;color:var(--link);border:1px solid var(--border)}
+#toast{position:fixed;top:16px;left:50%;transform:translate(-50%,-120px);background:var(--danger);color:#fff;padding:10px 18px;border-radius:20px;z-index:9999;opacity:0;transition:.3s;font-size:13px;max-width:80%}
+#toast.show{transform:translate(-50%,0);opacity:1}#toast.suc{background:var(--primary)}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:900;display:flex;align-items:center;justify-content:center}
+.modal-content{background:var(--card);padding:18px;border-radius:12px;width:92%;max-width:420px;max-height:80vh;overflow-y:auto}
+.auth-wrap{padding:16px;display:flex;flex-direction:column;align-items:center;min-height:100vh}
+.auth-box{width:100%;max-width:400px;background:var(--card);padding:26px;border-radius:10px;border:1px solid var(--border);margin-top:6vh}
+.auth-box h2{text-align:center;margin:0 0 18px}
+#app{display:flex;flex-direction:column;height:100vh;height:100dvh}
+#main-content{flex:1;overflow:hidden;position:relative}
+.page{display:none;height:100%;padding-bottom:calc(56px + env(safe-area-inset-bottom))}
+.page.active{display:block}
+.tab-bar{position:fixed;bottom:0;left:0;right:0;height:calc(56px + env(safe-area-inset-bottom));padding-bottom:env(safe-area-inset-bottom);background:var(--card);border-top:1px solid var(--border);display:flex;z-index:100}
+.tab-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;background:none;color:var(--muted);font-size:11px;position:relative}
+.tab-item.active{color:var(--primary)}.tab-icon{font-size:20px}
+.badge{position:absolute;top:6px;left:60%;min-width:16px;height:16px;border-radius:8px;background:var(--danger);color:#fff;font-size:10px;display:flex;align-items:center;justify-content:center;padding:0 4px}
+.chat-wrap{display:flex;height:100%;background:var(--chat)}
+.chat-side{width:38%;max-width:180px;background:var(--card);border-right:1px solid var(--border);overflow-y:auto}
+.search-row{padding:8px;display:flex;gap:6px;border-bottom:1px solid var(--border)}
+.search-row input{margin:0;font-size:12px;padding:7px}
+.contact{padding:12px 10px;border-bottom:1px solid var(--border);font-size:13px;display:flex;gap:8px;align-items:center;cursor:pointer}
+.contact .av{width:34px;height:34px;border-radius:6px;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.contact span:nth-child(2){overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.contact.on{background:var(--bg)}
+.cbadge{margin-left:auto;min-width:18px;height:18px;border-radius:9px;background:var(--danger);color:#fff;font-size:11px;display:flex;align-items:center;justify-content:center;padding:0 5px;flex-shrink:0}
+.req{padding:10px;border-bottom:1px solid var(--border);font-size:12px;background:#fff8e6;color:#8a6d1a}
+[data-theme=dark] .req{background:#2a2416;color:#d9b64a}
+.chat-main{flex:1;display:flex;flex-direction:column;min-width:0}
+.chat-top{height:48px;display:flex;align-items:center;padding:0 12px;background:var(--card);border-bottom:1px solid var(--border);font-weight:600}
+.chat-top .back{background:none;color:var(--text);font-size:22px;padding:0 10px 0 0}
+.msg-list{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:12px}
+.msg{display:flex;flex-direction:column;max-width:80%}
+.msg.mine{align-self:flex-end;align-items:flex-end}
+.msg .bubble{padding:9px 12px;border-radius:8px;font-size:14px;word-break:break-word;background:#fff;color:#111;border:1px solid var(--border)}
+[data-theme=dark] .msg .bubble{background:#2c2c2c;color:#e5e5e5}
+.msg.mine .bubble{background:#95ec69;color:#111;border-color:#95ec69}
+.msg .mtime{font-size:10px;color:var(--muted);margin-top:3px}
+.chat-input-row{display:flex;gap:8px;padding:8px;background:var(--card);border-top:1px solid var(--border)}
+.chat-input-row input{flex:1;width:auto;margin:0}
+.empty{text-align:center;color:var(--muted);margin-top:60px;font-size:13px;line-height:1.8}
+@media(max-width:600px){.chat-main{display:none}.chat-wrap.open .chat-side{display:none}.chat-wrap.open .chat-main{display:flex}}
+.video-container{height:100%;overflow-y:scroll;scroll-snap-type:y mandatory;background:#000;scrollbar-width:none}
+.video-container::-webkit-scrollbar{display:none}
+.video-item{height:100%;width:100%;scroll-snap-align:start;position:relative}
+.video-item video{width:100%;height:100%;object-fit:cover}
+.video-empty{height:100%;display:flex;align-items:center;justify-content:center;color:#777;text-align:center;font-size:16px;line-height:2}
+.v-info{position:absolute;left:14px;bottom:70px;color:#fff;max-width:70%;text-shadow:0 1px 3px rgba(0,0,0,.6)}
+.v-name{font-weight:700;margin-bottom:4px}.v-desc{font-size:13px;opacity:.9}
+.video-side{position:absolute;right:12px;bottom:70px;display:flex;flex-direction:column;gap:16px;z-index:5}
+.v-btn{background:rgba(0,0,0,.35);color:#fff;width:46px;height:46px;border-radius:50%;font-size:18px;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.v-btn i{font-style:normal;font-size:11px;margin-top:2px}
+.v-btn.on,.wb-foot button.on{color:#ff4d6d}
+.fab{position:fixed;bottom:calc(70px + env(safe-area-inset-bottom));right:16px;width:46px;height:46px;border-radius:50%;background:var(--wb);color:#fff;font-size:24px;z-index:60}
+.wb-publish{background:var(--card);padding:12px;border-bottom:1px solid var(--border)}
+.wb-tools{display:flex;gap:8px;align-items:center;margin-top:8px}
+.wb-tools input{flex:1;width:auto}
+.file{width:34px;height:34px;border-radius:6px;background:var(--bg);display:flex;align-items:center;justify-content:center;cursor:pointer}
+.wb-card{background:var(--card);padding:14px;border-bottom:1px solid var(--border)}
+.wb-head{display:flex;gap:10px;align-items:center;margin-bottom:8px}
+.wb-head .av{width:38px;height:38px;border-radius:50%;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:20px}
+.wb-head small{color:var(--muted);margin-left:8px}
+.wb-del{margin-left:auto;background:none;color:var(--muted);font-size:12px}
+.wb-body{font-size:15px;line-height:1.6;word-break:break-word}
+.topic{color:var(--wb);cursor:pointer}
+.wb-img{width:100%;max-height:320px;object-fit:cover;border-radius:8px;margin-top:8px}
+.wb-foot{display:flex;gap:18px;margin-top:10px;color:var(--muted);font-size:13px}
+.wb-foot button{background:none;color:var(--muted);font-size:13px}
+.me-head{padding:36px 20px 20px;text-align:center;background:var(--card)}
+.me-av{width:64px;height:64px;border-radius:50%;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:32px;margin:0 auto 10px}
+.me-head h2{margin:0 0 4px;font-size:18px}.me-head p{margin:2px 0;font-size:13px}
+.me-head .btn{width:auto;margin-top:12px}
+.stats{display:flex;background:var(--card);margin-top:10px;text-align:center}
+.stats>div{flex:1;padding:14px}.stats b{font-size:18px;display:block}.stats span{font-size:12px;color:var(--muted)}
+.cell{background:var(--card);margin-top:10px;padding:15px;display:flex;justify-content:space-between;font-size:14px;cursor:pointer;border-bottom:1px solid var(--border)}
+.cell.danger{color:var(--danger)}
+.c-list{max-height:300px;overflow-y:auto;margin:12px 0}
+.c-item{display:flex;gap:8px;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px}
+.c-item p{margin:2px 0}.c-item small{color:var(--muted)}
+.c-av{width:30px;height:30px;border-radius:50%;background:var(--bg);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.c-row{display:flex;gap:8px}.c-row input{flex:1;width:auto}
+</style></head><body>
+  <div id="toast"></div>
+<div id="auth-wrap" class="auth-wrap"><div class="auth-box">
+<h2 id="auth-title">登录</h2>
+<input type="email" id="email" placeholder="邮箱地址" autocomplete="username">
+<input type="password" id="pass" placeholder="密码" autocomplete="current-password">
+<button class="btn" id="auth-btn" onclick="handleAuth()">登 录</button>
+<div style="text-align:center;margin-top:14px;font-size:13px">
+<button onclick="toggleAuth()" style="background:none;color:var(--link)" id="switch-btn">去注册</button>
+<button onclick="guestLogin()" style="background:none;color:var(--link);margin-left:12px">访客登录</button></div>
+</div></div>
+<div id="app" class="hidden"><div id="main-content">
+<div id="page-chat" class="page active"><div class="chat-wrap" id="chat-wrap">
+  <div class="chat-side"><div class="search-row"><input id="search-email" placeholder="输入对方注册邮箱"><button class="btn sm" onclick="addFriend()">添加</button></div><div id="contact-list"></div></div>
+  <div class="chat-main"><div class="chat-top"><button class="back hidden" id="chat-back" onclick="closeChat()">‹</button><span id="chat-title">微信</span></div>
+  <div class="msg-list" id="chat-box"><div class="empty">选择好友开始聊天</div></div>
+  <div class="chat-input-row"><input id="chat-input" placeholder="发消息…" enterkeyhint="send" onkeydown="if(event.key==='Enter')sendMsg()"><button class="btn sm" onclick="sendMsg()">发送</button></div></div>
+</div></div>
+<div id="page-video" class="page"><div class="video-container" id="video-list"></div>
+<button class="fab" onclick="document.getElementById('video-upload').click()">+</button>
+<input type="file" id="video-upload" accept="video/*" class="hidden" onchange="uploadVideo(this)"></div>
+<div id="page-weibo" class="page">
+  <div class="wb-publish"><textarea id="wb-input" placeholder="有什么新鲜事想告诉大家？" maxlength="500"></textarea>
+  <div class="wb-tools"><input id="wb-topic" placeholder="#话题#" maxlength="20"><label class="file">📷<input type="file" id="wb-file" accept="image/*" class="hidden"></label><button class="btn sm" onclick="publishWeibo()">发布</button></div></div>
+  <div id="wb-list"></div></div>
+<div id="page-me" class="page">
+  <div class="me-head"><div class="me-av" id="me-av">🐣</div><h2 id="me-name">用户</h2><p id="me-email" class="muted"></p><p id="me-bio" class="muted"></p><button class="btn ghost sm" onclick="editProfile()">编辑资料</button></div>
+  <div class="stats"><div><b id="st-video">0</b><span>视频</span></div><div><b id="st-friend">0</b><span>好友</span></div><div><b id="st-weibo">0</b><span>微博</span></div></div>
+  <div class="cell" onclick="toggleTheme()"><span>🌙 深色模式</span><span id="theme-state">关</span></div>
+  <div class="cell" onclick="logout()"><span>退出登录</span><span class="muted">›</span></div>
+  <div class="cell danger" onclick="deleteAccount()"><span>清除我的数据</span><span class="muted">›</span></div></div>
+</div>
+<div class="tab-bar">
+<button class="tab-item active" id="tab-chat" onclick="switchTab('chat')"><span class="tab-icon">💬</span>微信<span class="badge hidden" id="badge"></span></button>
+<button class="tab-item" id="tab-video" onclick="switchTab('video')"><span class="tab-icon">🎬</span>抖音</button>
+<button class="tab-item" id="tab-weibo" onclick="switchTab('weibo')"><span class="tab-icon">📢</span>微博</button>
+<button class="tab-item" id="tab-me" onclick="switchTab('me')"><span class="tab-icon">👤</span>我的</button></div>
+</div>
+<div id="modal" class="modal hidden"><div class="modal-content" id="modal-body"></div></div>
+<script src="https://unpkg.com/@supabase/supabase-js@2.49.1"></script>
+<script>
+const SUPA_URL='https://scgmqocuqvqvyjfiulhs.supabase.co',SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNjZ21xb2N1cXZxdnlqZml1bGhzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM0MjI4MTksImV4cCI6MjEwODk5ODgxOX0.ICnjyfyYOgU840L_inw3nDiXjH6of3gk6-6V2ETNypo';
+let supa=null;try{if(window.supabase)supa=window.supabase.createClient(SUPA_URL,SUPA_KEY)}catch(e){}
+let me=null,prof=null,activeChat=null,unread={},io=null,rtCh=null,_cb=null,tt=null;
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const ago=t=>{const d=(Date.now()-new Date(t))/1000;if(d<60)return '刚刚';if(d<3600)return Math.floor(d/60)+'分钟前';if(d<86400)return Math.floor(d/3600)+'小时前';return new Date(t).toLocaleDateString('zh-CN')};
+function toast(m,type){const t=$('toast');t.textContent=m;t.className='show'+(type==='suc'?' suc':'');clearTimeout(tt);tt=setTimeout(()=>t.className='',2600)}
+function openModal(h){$('modal-body').innerHTML=h;$('modal').classList.remove('hidden')}
+function closeModal(){$('modal').classList.add('hidden')}
+function confirmBox(msg,cb){_cb=cb;openModal(`<h3 style="margin:0">提示</h3><p class="muted" style="margin:14px 0">${esc(msg)}</p><div style="display:flex;gap:10px"><button class="btn ghost" onclick="closeModal()">取消</button><button class="btn" onclick="doConfirm()">确定</button></div>`)}
+function doConfirm(){closeModal();if(_cb)_cb();_cb=null}
+function toggleAuth(){const l=$('auth-title').textContent==='登录';$('auth-title').textContent=l?'注册':'登录';$('auth-btn').textContent=l?'注 册':'登 录';$('switch-btn').textContent=l?'去登录':'去注册'}
+async function handleAuth(){const email=$('email').value.trim(),pass=$('pass').value;
+ if(!email||!pass)return toast('请输入邮箱和密码','err');
+ if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))return toast('邮箱格式不正确','err');
+ if(pass.length<6)return toast('密码至少6位','err');
+ const btn=$('auth-btn');btn.disabled=true;
+ try{const reg=$('auth-title').textContent==='注册';
+  const {error}=reg?await supa.auth.signUp({email,password:pass}):await supa.auth.signInWithPassword({email,password:pass});
+  if(error)toast(error.message,'err');else if(reg)toast('注册成功，请查收验证邮件','suc');
+ }finally{btn.disabled=false}}
+async function guestLogin(){try{const {error}=await supa.auth.signInAnonymously();if(error)toast(error.message,'err')}catch(e){toast('访客登录失败','err')}}
+function logout(){confirmBox('确定退出登录？',()=>supa.auth.signOut())}
+async function deleteAccount(){confirmBox('将删除你的全部数据（发布内容、私信、好友关系、媒体文件），不可恢复。账号本身仍可登录（成为空账号）。确定继续？',async()=>{
+ try{
+  const {data:myposts}=await supa.from('posts').select('id,media_url').eq('user_id',me.id);
+  const paths=[];(myposts||[]).forEach(p=>{const m=String(p.media_url||'').split('/media/')[1];if(m)paths.push(m)});
+  await supa.from('comments').delete().eq('user_id',me.id);
+  await supa.from('likes').delete().eq('user_id',me.id);
+  await supa.from('posts').delete().eq('user_id',me.id);
+  if(paths.length)await supa.storage.from('media').remove(paths);
+  await supa.from('private_messages').delete().or(`sender_id.eq.${me.id},receiver_id.eq.${me.id}`);
+  await supa.from('friendships').delete().or(`user1_id.eq.${me.id},user2_id.eq.${me.id}`);
+  await supa.from('notifications').delete().or(`user_id.eq.${me.id},from_id.eq.${me.id}`);
+  await supa.from('profiles').delete().eq('id',me.id);
+  await supa.auth.signOut();toast('个人数据已清除','suc')}catch(e){toast('操作失败：'+e.message,'err')}})}
+window.addEventListener('load',()=>{
+ document.documentElement.setAttribute('data-theme',localStorage.getItem('theme')||'light');
+ $('theme-state').textContent=localStorage.getItem('theme')==='dark'?'开':'关';
+ if(!supa){$('auth-wrap').innerHTML='<div class="auth-box"><h2>加载失败</h2><p class="muted" style="text-align:center">网络组件未加载，请刷新重试</p></div>';return}
+ supa.auth.onAuthStateChange((e,s)=>{if(s){me=s.user;enterApp()}else{me=null;leaveApp()}});
+});
+async function enterApp(){
+ activeChat=null;unread={};renderBadge();
+ $('chat-wrap').classList.remove('open');$('chat-back').classList.add('hidden');
+ $('auth-wrap').classList.add('hidden');$('app').classList.remove('hidden');
+ try{const {data}=await supa.from('profiles').select('nickname,avatar,bio').eq('id',me.id).maybeSingle();
+  prof=data||{nickname:'用户',avatar:'🐣',bio:''}}catch(e){prof={nickname:'用户',avatar:'🐣',bio:''}}
+ renderMe();switchTab('chat');subscribe();
+}
+function leaveApp(){$('app').classList.add('hidden');$('auth-wrap').classList.remove('hidden');if(rtCh){supa.removeChannel(rtCh);rtCh=null}}
+function switchTab(t){
+ document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.id==='page-'+t));
+ document.querySelectorAll('.tab-item').forEach(b=>b.classList.toggle('active',b.id==='tab-'+t));
+ if(t==='chat')loadFriends();if(t==='video')loadVideos();if(t==='weibo')loadWeibo();if(t==='me')renderMe();
+}
+function toggleTheme(){const n=document.documentElement.getAttribute('data-theme')==='light'?'dark':'light';document.documentElement.setAttribute('data-theme',n);localStorage.setItem('theme',n);$('theme-state').textContent=n==='dark'?'开':'关'}
+function subscribe(){if(rtCh)supa.removeChannel(rtCh);
+ rtCh=supa.channel('rt_'+me.id)
+  .on('postgres_changes',{event:'INSERT',schema:'public',table:'private_messages',filter:`receiver_id=eq.${me.id}`},p=>onIncoming(p.new))
+  .on('postgres_changes',{event:'INSERT',schema:'public',table:'notifications',filter:`user_id=eq.${me.id}`},p=>onNotif(p.new))
+  .subscribe();}
+function onNotif(n){loadFriends();
+ if(n.type==='friend_request')toast('收到新的好友申请','suc');
+ else if(n.type==='friend_accept')toast('对方已接受你的好友申请','suc');
+ else if(n.type==='like')toast('有人赞了你的内容','suc');
+ else if(n.type==='comment')toast('有人评论了你的内容','suc');}
+function onIncoming(m){unread[m.sender_id]=(unread[m.sender_id]||0)+1;renderBadge();
+ if(activeChat===m.sender_id){appendMsg(m,true);markRead(m.sender_id)}else loadFriends()}
+function renderBadge(){const n=Object.values(unread).reduce((a,b)=>a+b,0);const b=$('badge');b.textContent=n;b.classList.toggle('hidden',!n)}
+  async function loadFriends(){
+ const list=$('contact-list');
+ const [{data:fr},{data:pend},{data:out}]=await Promise.all([
+  supa.from('friendships').select('*').or(`user1_id.eq.${me.id},user2_id.eq.${me.id}`).eq('status','accepted'),
+  supa.from('friendships').select('id,user1_id,created_at').eq('user2_id',me.id).eq('status','pending'),
+  supa.from('friendships').select('user2_id,created_at').eq('user1_id',me.id).eq('status','pending')]);
+ const ids=[...new Set([...(fr||[]).map(f=>f.user1_id===me.id?f.user2_id:f.user1_id),...(pend||[]).map(r=>r.user1_id)])];
+ const pmap={};
+ if(ids.length){const {data:ps}=await supa.from('profiles').select('id,nickname,avatar').in('id',ids);(ps||[]).forEach(p=>pmap[p.id]=p)}
+ let html='';
+ (pend||[]).forEach(r=>{const n=pmap[r.user1_id]?.nickname||('用户'+r.user1_id.slice(0,4));
+  html+=`<div class="req"><b>${esc(n)}</b> 请求加好友 · ${ago(r.created_at)}<div style="display:flex;gap:6px;margin-top:6px"><button class="btn sm" onclick="acceptReq(${r.id},'${r.user1_id}')">接受</button><button class="btn ghost sm" onclick="declineReq(${r.id})">拒绝</button></div></div>`});
+ (fr||[]).forEach(f=>{const id=f.user1_id===me.id?f.user2_id:f.user1_id;const p=pmap[id]||{};
+  const n=p.nickname||('好友 '+id.slice(0,4));
+  html+=`<div class="contact${activeChat===id?' on':''}" data-uid="${id}" data-name="${esc(n)}"><span class="av">${esc(p.avatar||'👤')}</span><span>${esc(n)}</span>${unread[id]?`<span class="cbadge">${unread[id]}</span>`:''}</div>`});
+ (out||[]).forEach(r=>{const n=pmap[r.user2_id]?.nickname||('用户'+r.user2_id.slice(0,4));
+  html+=`<div class="contact muted" style="cursor:default"><span class="av">⏳</span><span>等待 ${esc(n)} 验证</span></div>`});
+ list.innerHTML=html||'<div class="empty" style="margin-top:30px">暂无好友<br><small>在上方输入对方注册邮箱添加</small></div>';
+ list.querySelectorAll('[data-uid]').forEach(el=>el.onclick=()=>openChat(el.dataset.uid,el.dataset.name));
+ loadUnread();}
+async function loadUnread(){const {data}=await supa.from('private_messages').select('sender_id').eq('receiver_id',me.id).eq('is_read',false);
+ unread={};(data||[]).forEach(m=>unread[m.sender_id]=(unread[m.sender_id]||0)+1);renderBadge();
+ if($('page-chat').classList.contains('active')){document.querySelectorAll('#contact-list .contact[data-uid]').forEach(el=>{const n=unread[el.dataset.uid]||0;let b=el.querySelector('.cbadge');if(n&&!b){b=document.createElement('span');b.className='cbadge';el.appendChild(b)}if(b)b.textContent=n;if(b&&!n)b.remove()})}}
+async function addFriend(){const q=$('search-email').value.trim();if(!q)return toast('请输入邮箱','err');
+ if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(q))return toast('邮箱格式不正确','err');
+ const {data:uid,error}=await supa.rpc('find_user_by_email',{p_email:q});
+ if(error)return toast('查找失败：'+error.message,'err');
+ if(!uid)return toast('未找到该邮箱用户（匿名访客无法通过邮箱被搜索）','err');
+ if(uid===me.id)return toast('不能添加自己','err');
+ const {error:e2}=await supa.from('friendships').insert([{user1_id:me.id,user2_id:uid,status:'pending'}]);
+ if(e2)return toast(e2.code==='23505'?'已是好友或已发送申请':'添加失败','err');
+ await supa.from('notifications').insert([{user_id:uid,from_id:me.id,type:'friend_request'}]);
+ $('search-email').value='';loadFriends();toast('好友请求已发送','suc')}
+async function acceptReq(id,fromId){await supa.from('friendships').update({status:'accepted'}).eq('id',id);
+ await supa.from('notifications').update({is_read:true}).eq('from_id',fromId).eq('user_id',me.id);
+ await supa.from('notifications').insert([{user_id:fromId,from_id:me.id,type:'friend_accept'}]);
+ loadFriends();toast('已接受，现在可以聊天了','suc')}
+async function declineReq(id){await supa.from('friendships').delete().eq('id',id);loadFriends()}
+function openChat(uid,name){activeChat=uid;$('chat-title').textContent=name;$('chat-wrap').classList.add('open');
+ $('chat-back').classList.remove('hidden');$('chat-box').innerHTML='<div class="empty">加载中…</div>';loadMsgs()}
+function closeChat(){activeChat=null;$('chat-wrap').classList.remove('open');$('chat-back').classList.add('hidden');loadFriends()}
+async function loadMsgs(){if(!activeChat)return;
+ const {data,error}=await supa.from('private_messages').select('*').or(`and(sender_id.eq.${me.id},receiver_id.eq.${activeChat}),and(sender_id.eq.${activeChat},receiver_id.eq.${me.id})`).order('created_at',{ascending:true});
+ if(error)return toast(error.message,'err');
+ const box=$('chat-box');box.innerHTML='';(data||[]).forEach(m=>appendMsg(m,m.sender_id===me.id));
+ box.scrollTop=box.scrollHeight;markRead(activeChat)}
+function appendMsg(m,mine){const box=$('chat-box');const e=box.querySelector('.empty');if(e)e.remove();
+ const d=document.createElement('div');d.className='msg '+(mine?'mine':'other');
+ d.innerHTML=`<div class="bubble">${esc(m.content)}</div><div class="mtime">${ago(m.created_at)}</div>`;
+ box.appendChild(d);box.scrollTop=box.scrollHeight}
+async function sendMsg(){const v=$('chat-input').value.trim();if(!v)return;if(!activeChat)return toast('请先选择好友','err');
+ const {data,error}=await supa.from('private_messages').insert([{sender_id:me.id,receiver_id:activeChat,content:v}]).select();
+ if(error){toast(error.message,'err');return}
+ $('chat-input').value='';appendMsg(data[0],true)}
+async function markRead(uid){unread[uid]=0;renderBadge();
+ await supa.from('private_messages').update({is_read:true}).eq('receiver_id',me.id).eq('sender_id',uid).eq('is_read',false)}
+async function myLiked(){const {data}=await supa.from('likes').select('post_id').eq('user_id',me.id);
+ return new Set((data||[]).map(l=>l.post_id))}
+async function loadVideos(){
+ const {data,error}=await supa.from('posts').select('*,profiles(nickname,avatar)').eq('kind','video').order('created_at',{ascending:false}).limit(50);
+ if(error)return toast(error.message,'err');
+ const list=$('video-list');list.innerHTML='';
+ if(!data||!data.length){list.innerHTML='<div class="video-empty"><div>🎬<br>暂无视频<br><small>点右下角 + 上传你的第一条视频</small></div></div>';return}
+ const liked=await myLiked();
+ data.forEach(v=>{const div=document.createElement('div');div.className='video-item';
+  div.innerHTML=`<video src="${esc(v.media_url)}" loop muted playsinline preload="metadata"></video>
+   <div class="v-info"><div class="v-name">${esc(v.profiles?.avatar||'')} @${esc(v.profiles?.nickname||'用户')}</div><div class="v-desc">${esc(v.content||'')}</div></div>
+   <div class="video-side">
+   ${v.user_id===me.id?`<button class="v-btn" onclick="delPost(${v.id},'video')">🗑</button>`:''}
+   <button class="v-btn${liked.has(v.id)?' on':''}" onclick="toggleLike(${v.id},this)">❤️<i>${v.like_count||0}</i></button>
+   <button class="v-btn" onclick="openComments(${v.id})">💬<i>${v.comment_count||0}</i></button>
+   <button class="v-btn" onclick="toast('链接已复制','suc')">↗️</button></div>`;
+  list.appendChild(div)});
+ bindIO();}
+function bindIO(){if(io)io.disconnect();
+ io=new IntersectionObserver(es=>es.forEach(e=>{const v=e.target.querySelector('video');if(!v)return;
+  e.isIntersecting?v.play().catch(()=>{}):v.pause()}),{root:$('video-list'),threshold:.6});
+ document.querySelectorAll('.video-item').forEach(i=>io.observe(i))}
+async function uploadVideo(input){const f=input.files[0];if(!f)return;
+ if(f.size>100*1024*1024){toast('视频不能超过 100MB','err');input.value='';return}
+ toast('上传中…');
+ try{const ext=(f.name.split('.').pop()||'mp4').toLowerCase();
+  const path=`${me.id}/${Date.now()}.${ext}`;
+  const {error:ue}=await supa.storage.from('media').upload(path,f,{cacheControl:'3600'});if(ue)throw ue;
+  const url=supa.storage.from('media').getPublicUrl(path).data.publicUrl;
+  const {error:ie}=await supa.from('posts').insert([{user_id:me.id,kind:'video',media_url:url}]);if(ie)throw ie;
+  toast('发布成功','suc');loadVideos()}catch(e){toast('上传失败：'+(e.message||e),'err')}
+ input.value=''}
+async function toggleLike(pid,btn){
+ const {data}=await supa.from('likes').select('id').eq('post_id',pid).eq('user_id',me.id).maybeSingle();
+ const i=btn.querySelector('i');const n=+i.textContent;
+ if(data){await supa.from('likes').delete().eq('id',data.id);btn.classList.remove('on');i.textContent=n-1}
+ else{const {error}=await supa.from('likes').insert([{post_id:pid,user_id:me.id}]);
+  if(error)return toast('操作太快啦','err');btn.classList.add('on');i.textContent=n+1}}
+  function openComments(pid){openModal(`<h3 style="margin:0">评论</h3><div class="c-list" id="c-list">加载中…</div>
+ <div class="c-row"><input id="c-input" placeholder="写下你的评论…"><button class="btn sm" onclick="postComment(${pid})">发送</button></div>`);renderComments(pid)}
+async function renderComments(pid){const {data}=await supa.from('comments').select('*,profiles(nickname,avatar)').eq('post_id',pid).order('created_at',{ascending:true});
+ $('c-list').innerHTML=(data||[]).map(c=>`<div class="c-item"><span class="c-av">${esc(c.profiles?.avatar||'🐣')}</span><div><b>${esc(c.profiles?.nickname||'用户')}</b><p>${esc(c.content)}</p><small>${ago(c.created_at)}</small></div></div>`).join('')||'<div class="empty">暂无评论</div>'}
+async function postComment(pid){const v=$('c-input').value.trim();if(!v)return;
+ const {error}=await supa.from('comments').insert([{post_id:pid,user_id:me.id,content:v}]);
+ if(error)return toast(error.message,'err');$('c-input').value='';renderComments(pid)}
+async function loadWeibo(){
+ const {data,error}=await supa.from('posts').select('*,profiles(nickname,avatar)').eq('kind','weibo').order('created_at',{ascending:false}).limit(50);
+ if(error)return toast(error.message,'err');
+ const liked=await myLiked();
+ $('wb-list').innerHTML=(data||[]).map(w=>`<div class="wb-card">
+  <div class="wb-head"><span class="av">${esc(w.profiles?.avatar||'🐣')}</span><div><b>${esc(w.profiles?.nickname||'用户')}</b><small>${ago(w.created_at)}</small></div>
+  ${w.user_id===me.id?`<button class="wb-del" onclick="delPost(${w.id},'weibo')">删除</button>`:''}</div>
+  <div class="wb-body">${esc(w.content)}${w.topic?` <span class="topic" data-topic="${esc(w.topic)}">#${esc(w.topic)}#</span>`:''}</div>
+  ${w.media_url?`<img class="wb-img" src="${esc(w.media_url)}" alt="">`:''}
+  <div class="wb-foot"><button class="${liked.has(w.id)?'on':''}" onclick="toggleLike(${w.id},this)">❤️ <i>${w.like_count||0}</i></button>
+  <button onclick="openComments(${w.id})">💬 <i>${w.comment_count||0}</i></button>
+  <button data-rep="${w.id}" data-name="${esc(w.profiles?.nickname||'用户')}" data-text="${esc(w.content||'')}">↻ 转发</button></div></div>`).join('')||'<div class="empty">还没有微博，发一条吧</div>';
+ document.querySelectorAll('[data-rep]').forEach(b=>b.onclick=()=>repost(+b.dataset.rep,b.dataset.name,b.dataset.text));
+ document.querySelectorAll('[data-topic]').forEach(el=>el.onclick=()=>toast('话题：'+el.dataset.topic));}
+async function publishWeibo(){const v=$('wb-input').value.trim();if(!v)return toast('说点什么吧','err');
+ const topic=$('wb-topic').value.trim().replace(/#/g,'');const f=$('wb-file').files[0];let url=null;
+ if(f&&f.size>10*1024*1024)return toast('图片不能超过 10MB','err');
+ try{if(f){const path=`${me.id}/wb_${Date.now()}.${(f.name.split('.').pop()||'jpg').toLowerCase()}`;
+  const {error}=await supa.storage.from('media').upload(path,f);if(error)throw error;
+  url=supa.storage.from('media').getPublicUrl(path).data.publicUrl}
+  const {error}=await supa.from('posts').insert([{user_id:me.id,kind:'weibo',content:v,topic:topic||null,media_url:url}]);
+  if(error)throw error;
+  $('wb-input').value='';$('wb-topic').value='';$('wb-file').value='';toast('发布成功','suc');loadWeibo();
+ }catch(e){toast('发布失败：'+(e.message||e),'err')}}
+async function repost(id,name,text){const {error}=await supa.from('posts').insert([{user_id:me.id,kind:'weibo',content:`转发 @${name}：${text.slice(0,140)}`}]);
+ if(error)return toast(error.message,'err');toast('转发成功','suc');loadWeibo()}
+function delPost(id,kind){confirmBox('确定删除这条内容？',async()=>{
+ const {error}=await supa.from('posts').delete().eq('id',id).eq('user_id',me.id);
+ if(error)return toast(error.message,'err');toast('已删除','suc');kind==='video'?loadVideos():loadWeibo()})}
+function renderMe(){$('me-av').textContent=prof.avatar||'🐣';$('me-name').textContent=prof.nickname||'用户';
+ $('me-email').textContent=me.is_anonymous?'匿名访客':(me.email||'');
+ $('me-bio').textContent=prof.bio||'这个人很懒，什么都没写';loadStats()}
+async function loadStats(){
+ const q=async t=>{const {count}=await supa.from('posts').select('id',{count:'exact',head:true}).eq('user_id',me.id).eq('kind',t);return count||0};
+ $('st-video').textContent=await q('video');$('st-weibo').textContent=await q('weibo');
+ const {count}=await supa.from('friendships').select('id',{count:'exact',head:true}).or(`user1_id.eq.${me.id},user2_id.eq.${me.id}`).eq('status','accepted');
+ $('st-friend').textContent=count||0}
+function editProfile(){openModal(`<h3 style="margin:0">编辑资料</h3>
+ <div style="margin:14px 0"><label class="muted" style="font-size:13px">昵称</label><input id="p-nick" value="${esc(prof.nickname||'')}" maxlength="20"></div>
+ <div style="margin-bottom:14px"><label class="muted" style="font-size:13px">头像（emoji）</label><input id="p-av" value="${esc(prof.avatar||'🐣')}" maxlength="4"></div>
+ <div style="margin-bottom:14px"><label class="muted" style="font-size:13px">简介</label><textarea id="p-bio" maxlength="100">${esc(prof.bio||'')}</textarea></div>
+ <button class="btn" onclick="saveProfile()">保存</button>`)}
+async function saveProfile(){const nickname=$('p-nick').value.trim()||'用户',avatar=$('p-av').value.trim()||'🐣',bio=$('p-bio').value.trim();
+ const {error}=await supa.from('profiles').update({nickname,avatar,bio}).eq('id',me.id);
+ if(error)return toast(error.message,'err');prof={...prof,nickname,avatar,bio};closeModal();renderMe();toast('已保存','suc')}
+</script>
+</body></html>
