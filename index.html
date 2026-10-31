@@ -1,312 +1,227 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Reliable intelligence</title>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <style>
-    :root {
-      --bg-color: #f6f8fa; --card-bg: #ffffff; --text-main: #1f2328; --text-muted: #656d76;
-      --border-color: #d0d7de; --primary: #1f883d; --primary-hover: #1a7f37;
-      --danger: #cf222e; --input-bg: #ffffff; --btn-secondary: #f6f8fa;
-      --btn-secondary-border: #d0d7de; --btn-secondary-text: #24292f; --link-color: #0969da;
-    }
-    [data-theme="dark"] {
-      --bg-color: #0d1117; --card-bg: #161b22; --text-main: #c9d1d9; --text-muted: #8b949e;
-      --border-color: #30363d; --primary: #238636; --primary-hover: #2ea043;
-      --danger: #da3633; --input-bg: #0d1117; --btn-secondary: #21262d;
-      --btn-secondary-border: #30363d; --btn-secondary-text: #c9d1d9; --link-color: #58a6ff;
-    }
-    * { box-sizing: border-box; transition: background-color 0.2s, color 0.2s; -webkit-tap-highlight-color: transparent; }
-    body { background-color: var(--bg-color); color: var(--text-main); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; padding: 15px; margin: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
-    .container { width: 100%; max-width: 420px; margin-top: 3vh; position: relative; z-index: 1; }
-    
-    .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; gap: 10px; flex-wrap: wrap; }
-    .brand-title { font-size: 17px; font-weight: 700; letter-spacing: -0.3px; color: var(--text-main); white-space: nowrap; }
-    
-    .tool-bar { display: flex; gap: 6px; align-items: center; position: relative; z-index: 10; }
-    
-    .lang-select {
-      padding: 6px;
-      border-radius: 6px;
-      border: 1px solid var(--border-color);
-      background-color: var(--btn-secondary);
-      color: var(--text-main);
-      font-size: 12px;
-      cursor: pointer;
-      outline: none;
-      max-width: 85px;
-      touch-action: manipulation;
-    }
-
-    .icon-btn { 
-      background: var(--btn-secondary); 
-      border: 1px solid var(--border-color); 
-      color: var(--text-main); 
-      cursor: pointer; 
-      padding: 7px; 
-      border-radius: 6px; 
-      display: flex; 
-      align-items: center; 
-      justify-content: center;
-      pointer-events: auto;
-      touch-action: manipulation;
-    }
-    .icon-btn:active { background: var(--border-color); }
-    .icon-btn svg { pointer-events: none; }
-    
-    .card { background: var(--card-bg); padding: 24px; border-radius: 8px; border: 1px solid var(--border-color); box-shadow: 0 4px 12px rgba(0,0,0,0.05); position: relative; z-index: 5; }
-    h2 { margin-top: 0; margin-bottom: 6px; font-size: 20px; font-weight: 600; text-align: center; }
-    .subtitle { text-align: center; color: var(--text-muted); font-size: 13px; margin-bottom: 20px; min-height: 38px;}
-    
-    input[type="email"], input[type="password"] { width: 100%; padding: 10px 12px; margin-bottom: 14px; background: var(--input-bg); border: 1px solid var(--border-color); border-radius: 6px; color: var(--text-main); font-size: 14px; outline: none; position: relative; z-index: 10; }
-    input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(31,136,61,0.15); }
-    
-    button.primary-btn { width: 100%; padding: 11px; background: var(--primary); color: #fff; border: none; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 6px; position: relative; z-index: 10; touch-action: manipulation; }
-    button.primary-btn:active { background: var(--primary-hover); }
-    
-    .link-row { display: flex; justify-content: space-between; margin-top: 14px; font-size: 13px; position: relative; z-index: 20; }
-    .link-row button { background: transparent; border: none; color: var(--link-color); padding: 8px 4px; font-size: 13px; cursor: pointer; touch-action: manipulation; }
-    .link-row button:active { text-decoration: underline; }
-    
-    .agreement-box { display: flex; align-items: flex-start; gap: 8px; margin-top: 16px; font-size: 12px; color: var(--text-muted); line-height: 1.5; position: relative; z-index: 20;}
-    .agreement-box input[type="checkbox"] { margin-top: 2px; appearance: none; -webkit-appearance: none; width: 18px; height: 18px; border: 1px solid var(--border-color); border-radius: 3px; background: var(--input-bg); cursor: pointer; flex-shrink: 0; position: relative; touch-action: manipulation;}
-    .agreement-box input[type="checkbox"]:checked { background: var(--primary); border-color: var(--primary); }
-    .agreement-box input[type="checkbox"]:checked::after { content: ''; position: absolute; left: 4px; top: 1px; width: 4px; height: 8px; border: solid #fff; border-width: 0 2px 2px 0; transform: rotate(45deg); }
-    .agreement-box button { background: transparent; border: none; padding: 0; color: var(--link-color); text-decoration: none; font-weight: 500; cursor: pointer; font-size: 12px; touch-action: manipulation; }
-    
-    #msg { text-align: center; margin-top: 12px; font-size: 13px; color: var(--danger); min-height: 18px; }
-    .hidden { display: none !important; }
-    svg { width: 15px; height: 15px; fill: currentColor; pointer-events: none; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Reliable intelligence</title>
+<style>
+:root{--bg:#f6f8fa;--card:#fff;--text:#1f2328;--muted:#656d76;--border:#d0d7de;--primary:#1f883d;--phover:#1a7f37;--danger:#cf222e;--input:#fff;--sec:#f6f8fa;--link:#0969da}
+[data-theme="dark"]{--bg:#0d1117;--card:#161b22;--text:#c9d1d9;--muted:#8b949e;--border:#30363d;--primary:#238636;--phover:#2ea043;--danger:#da3633;--input:#0d1117;--sec:#21262d;--link:#58a6ff}
+*{box-sizing:border-box;transition:background .2s,color .2s;-webkit-tap-highlight-color:transparent}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;padding:15px;margin:0;display:flex;flex-direction:column;align-items:center;min-height:100vh}
+.container{width:100%;max-width:420px;margin-top:5vh}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+.brand{font-size:17px;font-weight:700;white-space:nowrap}
+.tools{display:flex;gap:8px;align-items:center}
+select{padding:6px;border-radius:6px;border:1px solid var(--border);background:var(--sec);color:var(--text);font-size:13px;outline:none;max-width:90px}
+.icon{background:var(--sec);border:1px solid var(--border);color:var(--text);padding:6px 10px;border-radius:6px;font-size:13px;cursor:pointer}
+.icon:active{background:var(--border)}
+.card{background:var(--card);padding:24px;border-radius:8px;border:1px solid var(--border);box-shadow:0 4px 12px rgba(0,0,0,.05)}
+h2{margin:0 0 6px;font-size:20px;font-weight:600;text-align:center}
+.sub{text-align:center;color:var(--muted);font-size:13px;margin-bottom:20px;min-height:38px}
+input[type="email"],input[type="password"]{width:100%;padding:12px;margin-bottom:16px;background:var(--input);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:15px;outline:none}
+input:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(31,136,61,.15)}
+.btn{width:100%;padding:12px;background:var(--primary);color:#fff;border:none;border-radius:6px;font-size:15px;font-weight:600;cursor:pointer}
+.btn:active{background:var(--phover)}
+.btn:disabled{opacity:.6;cursor:not-allowed}
+.links{display:flex;justify-content:space-between;margin-top:16px}
+.link{background:none;border:none;color:var(--link);font-size:13px;padding:5px 0;cursor:pointer}
+.agree{display:flex;align-items:flex-start;gap:8px;margin-top:16px;font-size:13px;color:var(--muted);line-height:1.5}
+.agree input{margin-top:3px;width:16px;height:16px}
+.agree button{background:none;border:none;color:var(--link);padding:0;font-size:13px}
+#msg,#fmsg{text-align:center;margin-top:12px;font-size:13px;min-height:18px}
+.msg-err{color:var(--danger)}.msg-suc{color:var(--primary)}.msg-info{color:var(--muted)}
+.hidden{display:none!important}
+#toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-120%);background:var(--danger);color:#fff;padding:10px 24px;border-radius:6px;font-size:14px;opacity:0;transition:all .3s;z-index:999;max-width:90%;text-align:center}
+#toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+</style>
 </head>
 <body>
 
+<div id="toast"></div>
+
 <div class="container">
-  <div class="top-bar">
-    <div class="brand-title">Reliable intelligence</div>
-    
-    <div class="tool-bar">
-      <button type="button" class="icon-btn" onclick="speakTitle()" title="语音播报">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>
-      </button>
-
-      <select class="lang-select" id="lang-select" onchange="changeLanguage(this.value)">
-        <option value="zh">中文</option>
-        <option value="en">English (US)</option>
-        <option value="ja">日本語</option>
-        <option value="de">Deutsch</option>
-      </select>
-
-      <button type="button" class="icon-btn" onclick="toggleTheme()" title="切换主题">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
-      </button>
-    </div>
-  </div>
-
-  <div id="auth-section" class="card">
-    <h2 id="auth-title" data-i18n="login_title">登录系统</h2>
-    <div class="subtitle" id="auth-subtitle" data-i18n="login_sub">欢迎回来，请输入您的账户信息</div>
-    
-    <input type="email" id="email" placeholder="邮箱地址" data-i18n-placeholder="ph_email">
-    <input type="password" id="password" placeholder="密码" data-i18n-placeholder="ph_password">
-    
-    <button type="button" class="primary-btn" id="auth-btn" onclick="handleAuth()" data-i18n="btn_login">登 录</button>
-    
-    <div class="link-row">
-      <button type="button" onclick="toggleAuthMode()" id="switch-text" data-i18n="link_register">没有账号？去注册</button>
-      <button type="button" id="forgot-text" onclick="showForgotPassword()" data-i18n="link_forgot">忘记密码？</button>
-    </div>
-    
-    <div class="agreement-box hidden" id="agreement-wrap">
-      <input type="checkbox" id="agree-check">
-      <label for="agree-check" style="cursor:pointer; flex: 1;">
-        <span data-i18n="agree_text1">我已阅读并同意</span> 
-        <button type="button" onclick="showDisclaimer()" data-i18n="link_disclaimer">《免责声明》</button> 
-        <span data-i18n="agree_text2">与</span> 
-        <button type="button" onclick="showPrivacy()" data-i18n="link_privacy">《隐私政策》</button>
-        <span data-i18n="agree_text3">。本系统仅供娱乐与学习交流使用。</span>
-      </label>
-    </div>
-    
-    <div id="msg"></div>
-  </div>
-
-  <div id="forgot-section" class="card hidden">
-    <h2 data-i18n="forgot_title">找回密码</h2>
-    <div class="subtitle" data-i18n="forgot_sub">输入您注册时的邮箱，我们将发送重置链接</div>
-    <input type="email" id="reset-email" placeholder="邮箱地址" data-i18n-placeholder="ph_email">
-    <button type="button" class="primary-btn" onclick="sendResetEmail()" data-i18n="btn_send_reset">发送重置邮件</button>
-    <div class="link-row" style="justify-content: center; margin-top: 16px;">
-      <button type="button" onclick="backToLogin()" data-i18n="link_back">返回登录</button>
-    </div>
-    <div id="forgot-msg" style="text-align: center; margin-top: 12px; font-size: 13px; color: var(--text-muted); min-height: 18px;"></div>
-  </div>
+<div class="top">
+<div class="brand">Reliable intelligence</div>
+<div class="tools">
+<button type="button" class="icon" onclick="speak()">语音</button>
+<select id="lang" onchange="setLang(this.value)"><option value="zh">中文</option><option value="en">English</option><option value="ja">日本語</option><option value="de">Deutsch</option></select>
+<button type="button" class="icon" onclick="theme()">主题</button>
+</div>
 </div>
 
+<div id="auth" class="card">
+<h2 id="title" data-i18n="title">登录系统</h2>
+<div class="sub" id="sub" data-i18n="sub">欢迎回来，请输入您的账户信息</div>
+<input type="email" id="email" placeholder="邮箱地址" data-i18n-ph="ph_email">
+<input type="password" id="pass" placeholder="密码" data-i18n-ph="ph_pass">
+<button type="button" class="btn" id="btn" onclick="auth()" data-i18n="btn">登 录</button>
+<div class="links">
+<button type="button" class="link" id="switch" onclick="toggleMode()" data-i18n="switch">没有账号？去注册</button>
+<button type="button" class="link" id="forgot" onclick="showForgot()" data-i18n="forgot">忘记密码？</button>
+</div>
+<div class="agree hidden" id="agreeBox">
+<input type="checkbox" id="chk">
+<div>
+<span data-i18n="ag1">我已阅读并同意</span>
+<button type="button" onclick="showModal(T[cur].disclaimer)" data-i18n="disclaimer">《免责声明》</button>
+<span data-i18n="ag2">与</span>
+<button type="button" onclick="showModal(T[cur].privacy)" data-i18n="privacy">《隐私政策》</button>
+<span data-i18n="ag3">。本系统仅供娱乐与学习交流使用。</span>
+</div>
+</div>
+<div id="msg"></div>
+</div>
+
+<div id="resetSec" class="card hidden">
+<h2 data-i18n="rtitle2">找回密码</h2>
+<div class="sub" data-i18n="rsub2">输入您注册时的邮箱，我们将发送重置链接</div>
+<input type="email" id="remail" placeholder="邮箱地址" data-i18n-ph="ph_email">
+<button type="button" class="btn" id="rbtn" onclick="sendReset()" data-i18n="send">发送重置邮件</button>
+<div class="links" style="justify-content:center"><button type="button" class="link" onclick="back()" data-i18n="back">返回登录</button></div>
+<div id="fmsg"></div>
+</div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-  const SUPABASE_URL = 'https://scgmqocuqvqvyjfiulhs.supabase.co'; 
-  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNjZ21xb2N1cXZxdnlqZml1bGhzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM0MjI4MTksImV4cCI6MjEwODk5ODgxOX0.ICnjyfyYOgU840L_inw3nDiXjH6of3gk6-6V2ETNypo';
+const T={
+zh:{title:"登录系统",sub:"欢迎回来，请输入您的账户信息",rtitle:"注册账号",rsub:"创建您的专属账户",ph_email:"邮箱地址",ph_pass:"密码",btn:"登 录",rbtn:"注 册",switch:"没有账号？去注册",slogin:"已有账号？去登录",forgot:"忘记密码？",rtitle2:"找回密码",rsub2:"输入您注册时的邮箱，我们将发送重置链接",send:"发送重置邮件",back:"返回登录",ag1:"我已阅读并同意",ag2:"与",ag3:"。本系统仅供娱乐与学习交流使用。",disclaimer:"【免责声明】仅供技术演示与娱乐。\n\n本系统仅为技术演示用途，不涉及真实数据存储。请勿使用真实敏感信息。",privacy:"【隐私政策】仅收集邮箱用于登录。\n\n我们不会主动收集、存储或分享您的任何个人信息。",e_empty:"请输入邮箱和密码",e_email:"邮箱格式不正确",e_pass:"密码至少6位",e_agree:"请勾选同意免责声明",p_ing:"处理中...",s_login:"登录成功！",s_reg:"注册成功，请去邮箱验证。",s_sent:"重置链接已发送",load_err:"网络组件加载失败，请检查网络连接"},
+en:{title:"Sign In",sub:"Welcome back",rtitle:"Sign Up",rsub:"Create account",ph_email:"Email",ph_pass:"Password",btn:"Sign In",rbtn:"Sign Up",switch:"No account? Sign up",slogin:"Have account? Sign in",forgot:"Forgot password?",rtitle2:"Reset Password",rsub2:"Enter email for reset link",send:"Send Reset Email",back:"Back",ag1:"I agree to the",ag2:"and",ag3:".",disclaimer:"Disclaimer: Demo only.\n\nThis system is for technical demonstration purposes only. Do not use real sensitive data.",privacy:"Privacy: Email only.\n\nWe do not actively collect, store, or share your personal information.",e_empty:"Enter email & password",e_email:"Invalid email",e_pass:"Password >= 6 chars",e_agree:"Agree to terms",p_ing:"Processing...",s_login:"Success!",s_reg:"Registered! Check email.",s_sent:"Reset link sent",load_err:"Network component failed to load"},
+ja:{title:"ログイン",sub:"おかえりなさい",rtitle:"新規登録",rsub:"アカウント作成",ph_email:"メール",ph_pass:"パスワード",btn:"ログイン",rbtn:"登録",switch:"アカウントなし？登録",slogin:"アカウントあり？ログイン",forgot:"パスワード忘れ？",rtitle2:"パスワード再設定",rsub2:"メールを入力",send:"メール送信",back:"戻る",ag1:"同意する",ag2:"と",ag3:"。",disclaimer:"免責事項",privacy:"プライバシー",e_empty:"入力してください",e_email:"無効なメール",e_pass:"6文字以上",e_agree:"同意が必要",p_ing:"処理中...",s_login:"成功！",s_reg:"登録完了",s_sent:"送信しました",load_err:"ネットワークエラー"},
+de:{title:"Anmelden",sub:"Willkommen",rtitle:"Registrieren",rsub:"Konto erstellen",ph_email:"E-Mail",ph_pass:"Passwort",btn:"Anmelden",rbtn:"Registrieren",switch:"Kein Konto? Registrieren",slogin:"Konto? Anmelden",forgot:"Passwort vergessen?",rtitle2:"Passwort zurücksetzen",rsub2:"E-Mail eingeben",send:"E-Mail senden",back:"Zurück",ag1:"Ich stimme",ag2:"und",ag3:" zu.",disclaimer:"Haftungsausschluss",privacy:"Datenschutz",e_empty:"Eingeben",e_email:"Ungültige E-Mail",e_pass:"Mindestens 6 Zeichen",e_agree:"Zustimmen",p_ing:"Verarbeitung...",s_login:"Erfolg!",s_reg:"Registriert",s_sent:"Link gesendet",load_err:"Netzwerkfehler"}
+};
 
-  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-  let isLoginMode = true;
-  let currentLang = 'zh';
+let cur=localStorage.getItem('lang')||'zh',isLogin=true,supa=null;
 
-  const translations = {
-    zh: { login_title: "登录系统", login_sub: "欢迎回来，请输入您的账户信息", register_title: "注册账号", register_sub: "创建您的专属账户", ph_email: "邮箱地址", ph_password: "密码", btn_login: "登 录", btn_register: "注 册", link_register: "没有账号？去注册", link_login: "已有账号？去登录", link_forgot: "忘记密码？", forgot_title: "找回密码", forgot_sub: "输入您注册时的邮箱，我们将发送重置链接", btn_send_reset: "发送重置邮件", link_back: "返回登录", agree_text1: "我已阅读并同意", agree_text2: "与", agree_text3: "。本系统仅供娱乐与学习交流使用。", link_disclaimer: "《免责声明》", link_privacy: "《隐私政策》" },
-    en: { login_title: "Sign In", login_sub: "Welcome back, please enter your details", register_title: "Sign Up", register_sub: "Create your account", ph_email: "Email", ph_password: "Password", btn_login: "Sign In", btn_register: "Sign Up", link_register: "No account? Sign up", link_login: "Have account? Sign in", link_forgot: "Forgot password?", forgot_title: "Reset Password", forgot_sub: "Enter email to receive reset link", btn_send_reset: "Send Reset Email", link_back: "Back to Login", agree_text1: "I agree to the", agree_text2: "and", agree_text3: ". For entertainment only.", link_disclaimer: "Disclaimer", link_privacy: "Privacy Policy" },
-    ja: { login_title: "ログイン", login_sub: "アカウント情報を入力してください", register_title: "新規登録", register_sub: "アカウントを作成する", ph_email: "メールアドレス", ph_password: "パスワード", btn_login: "ログイン", btn_register: "登録", link_register: "アカウントなし？登録", link_login: "アカウントあり？ログイン", link_forgot: "パスワード忘れ？", forgot_title: "パスワード再設定", forgot_sub: "メールアドレスを入力してください", btn_send_reset: "メールを送信", link_back: "ログインに戻る", agree_text1: "同意する", agree_text2: "と", agree_text3: "。娯楽と学習のみ。", link_disclaimer: "免責事項", link_privacy: "プライバシーポリシー" },
-    de: { login_title: "Anmelden", login_sub: "Bitte geben Sie Ihre Daten ein", register_title: "Registrieren", register_sub: "Konto erstellen", ph_email: "E-Mail", ph_password: "Passwort", btn_login: "Anmelden", btn_register: "Registrieren", link_register: "Kein Konto? Registrieren", link_login: "Konto? Anmelden", link_forgot: "Passwort vergessen?", forgot_title: "Passwort zurücksetzen", forgot_sub: "E-Mail eingeben", btn_send_reset: "E-Mail senden", link_back: "Zurück", agree_text1: "Ich stimme", agree_text2: "und", agree_text3: " zu. Nur zur Unterhaltung.", link_disclaimer: "Haftungsausschluss", link_privacy: "Datenschutz" }
-  };
+try{
+  if(window.supabase)
+    supa=window.supabase.createClient(
+      'https://scgmqocuqvqvyjfiulhs.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNjZ21xb2N1cXZxdnlqZml1bGhzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM0MjI4MTksImV4cCI6MjEwODk5ODgxOX0.ICnjyfyYOgU840L_inw3nDiXjH6of3gk6-6V2ETNypo'
+    );
+}catch(e){}
 
-  const savedTheme = localStorage.getItem('theme') || 'light';
-  document.documentElement.setAttribute('data-theme', savedTheme);
+const $=id=>document.getElementById(id);
 
-  const savedLang = localStorage.getItem('lang') || 'zh';
-  document.getElementById('lang-select').value = savedLang;
-  changeLanguage(savedLang);
+function speak(){if('speechSynthesis' in window){const m={zh:'zh-CN',en:'en-US',ja:'ja-JP',de:'de-DE'};const txt=(isLogin?T[cur].title:T[cur].rtitle)+" Reliable intelligence";const u=new SpeechSynthesisUtterance(txt);u.lang=m[cur];window.speechSynthesis.speak(u)}}
 
-  function toggleTheme() {
-    const current = document.documentElement.getAttribute('data-theme');
-    const next = current === 'light' ? 'dark' : 'light';
-    document.documentElement.setAttribute('data-theme', next);
-    localStorage.setItem('theme', next);
-  }
+function theme(){
+  const n=document.documentElement.getAttribute('data-theme')==='light'?'dark':'light';
+  document.documentElement.setAttribute('data-theme',n);
+  localStorage.setItem('theme',n);
+}
 
-  function changeLanguage(lang) {
-    currentLang = lang;
-    localStorage.setItem('lang', lang);
-    
-    document.querySelectorAll('[data-i18n]').forEach(el => {
-      const key = el.getAttribute('data-i18n');
-      if (translations[lang][key]) el.innerText = translations[lang][key];
-    });
-
-    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
-      const key = el.getAttribute('data-i18n-placeholder');
-      if (translations[lang][key]) el.placeholder = translations[lang][key];
-    });
-
-    updateAuthUI();
-  }
-
-  function updateAuthUI() {
-    const langData = translations[currentLang];
-    document.getElementById('auth-title').innerText = isLoginMode ? langData.login_title : langData.register_title;
-    document.getElementById('auth-subtitle').innerText = isLoginMode ? langData.login_sub : langData.register_sub;
-    document.getElementById('auth-btn').innerText = isLoginMode ? langData.btn_login : langData.btn_register;
-    document.getElementById('switch-text').innerText = isLoginMode ? langData.link_register : langData.link_login;
-  }
-
-  function speakTitle() {
-    if ('speechSynthesis' in window) {
-      const langMap = { zh: 'zh-CN', en: 'en-US', ja: 'ja-JP', de: 'de-DE' };
-      const text = translations[currentLang].login_title + " " + "Reliable intelligence";
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = langMap[currentLang];
-      utterance.rate = 1.0;
-      window.speechSynthesis.speak(utterance);
-    } else {
-      alert("浏览器不支持语音播报");
-    }
-  }
-
-  function toggleAuthMode() {
-    isLoginMode = !isLoginMode;
-    document.getElementById('forgot-text').style.display = isLoginMode ? 'block' : 'none';
-    document.getElementById('agreement-wrap').classList.toggle('hidden', isLoginMode);
-    document.getElementById('msg').innerText = '';
-    updateAuthUI();
-  }
-
-  async function handleAuth() {
-    const email = document.getElementById('email').value.trim();
-    const password = document.getElementById('password').value;
-    const msgEl = document.getElementById('msg');
-    
-    if (!isLoginMode && !document.getElementById('agree-check').checked) {
-      msgEl.innerText = currentLang === 'zh' ? '请勾选同意免责声明' : 'Please agree to the terms';
-      return;
-    }
-    
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!email || !emailRegex.test(email)) { msgEl.innerText = 'Invalid email'; return; }
-    if (!password || password.length < 6) { msgEl.innerText = 'Password >= 6 chars'; return; }
-    
-    msgEl.style.color = 'var(--text-muted)';
-    msgEl.innerText = 'Processing...';
-
-    if (isLoginMode) {
-      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error) {
-        msgEl.style.color = 'var(--danger)';
-        msgEl.innerText = error.message;
-      } else {
-        msgEl.style.color = 'var(--primary)';
-        msgEl.innerText = 'Success!';
-        setTimeout(() => alert('登录成功！控制面板待开发...'), 800);
-      }
-    } else {
-      const { data, error } = await supabase.auth.signUp({ email, password });
-      if (error) {
-        msgEl.style.color = 'var(--danger)';
-        msgEl.innerText = error.message;
-      } else {
-        msgEl.style.color = 'var(--primary)';
-        msgEl.innerText = currentLang === 'zh' ? '注册成功！请前往邮箱验证。' : 'Registered! Check email.';
-      }
-    }
-  }
-
-  function showForgotPassword() {
-    document.getElementById('auth-section').classList.add('hidden');
-    document.getElementById('forgot-section').classList.remove('hidden');
-    document.getElementById('reset-email').value = document.getElementById('email').value.trim();
-    document.getElementById('forgot-msg').innerText = '';
-  }
-
-  function backToLogin() {
-    document.getElementById('forgot-section').classList.add('hidden');
-    document.getElementById('auth-section').classList.remove('hidden');
-  }
-
-  async function sendResetEmail() {
-    const email = document.getElementById('reset-email').value.trim();
-    const msgEl = document.getElementById('forgot-msg');
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { msgEl.innerText = 'Invalid email'; return; }
-
-    msgEl.style.color = 'var(--text-muted)';
-    msgEl.innerText = 'Sending...';
-
-    const currentUrl = window.location.href.split('#')[0];
-    const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: currentUrl });
-
-    if (error) {
-      msgEl.style.color = 'var(--danger)';
-      msgEl.innerText = error.message;
-    } else {
-      msgEl.style.color = 'var(--primary)';
-      msgEl.innerText = currentLang === 'zh' ? '重置链接已发送' : 'Reset link sent';
-    }
-  }
-
-  supabase.auth.onAuthStateChange(async (event, session) => {
-    if (event === 'PASSWORD_RECOVERY') {
-      const newPassword = prompt('Enter new password (>= 6 chars):');
-      if (newPassword && newPassword.length >= 6) {
-        const { error } = await supabase.auth.updateUser({ password: newPassword });
-        if (error) alert('Error: ' + error.message);
-        else {
-          alert('✅ Password updated!');
-          window.location.href = window.location.href.split('#')[0];
-        }
-      }
-    }
+function setLang(l){
+  cur=l;localStorage.setItem('lang',l);
+  const d=T[l];
+  document.querySelectorAll('[data-i18n]').forEach(e=>{
+    const k=e.getAttribute('data-i18n');if(d[k])e.textContent=d[k];
   });
+  document.querySelectorAll('[data-i18n-ph]').forEach(e=>{
+    const k=e.getAttribute('data-i18n-ph');if(d[k])e.placeholder=d[k];
+  });
+  updUI();
+}
 
-  function showDisclaimer() { alert('【免责声明 / Disclaimer】\n\n本系统仅供技术演示与娱乐，请勿存入敏感数据。'); }
-  function showPrivacy() { alert('【隐私政策 / Privacy】\n\n我们仅收集邮箱用于登录，密码已加密。'); }
+function updUI(){
+  const d=T[cur];
+  $('title').textContent=isLogin?d.title:d.rtitle;
+  $('sub').textContent=isLogin?d.sub:d.rsub;
+  $('btn').textContent=isLogin?d.btn:d.rbtn;
+  $('switch').textContent=isLogin?d.switch:d.slogin;
+}
+
+function toggleMode(){
+  isLogin=!isLogin;
+  $('forgot').style.display=isLogin?'block':'none';
+  $('agreeBox').classList.toggle('hidden',isLogin);
+  $('pass').value='';
+  $('msg').textContent='';
+  updUI();
+}
+
+function showToast(msg){
+  const t=$('toast');
+  t.textContent=msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3000);
+}
+
+function showModal(content){
+  const overlay=document.createElement('div');
+  overlay.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);z-index:1000;display:flex;align-items:center;justify-content:center';
+  const box=document.createElement('div');
+  box.style.cssText='background:var(--card);color:var(--text);padding:24px;border-radius:8px;max-width:90%;max-height:80vh;overflow:auto;font-size:14px;line-height:1.6';
+  box.innerHTML='<pre style="margin:0 0 16px 0;white-space:pre-wrap;font-family:inherit">'+content+'</pre><button style="padding:8px 20px;background:var(--primary);color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:14px">OK</button>';
+  box.querySelector('button').onclick=()=>overlay.remove();
+  overlay.onclick=(e)=>{if(e.target===overlay)overlay.remove()};
+  document.body.appendChild(overlay);
+}
+
+function setMsg(id,txt,type){
+  const e=$(id);
+  e.textContent=txt;
+  e.className='msg-'+type;
+}
+
+async function auth(){
+  const email=$('email').value.trim(),pass=$('pass').value,d=T[cur],btn=$('btn');
+  if(!email||!pass)return setMsg('msg',d.e_empty,'err');
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))return setMsg('msg',d.e_email,'err');
+  if(pass.length<6)return setMsg('msg',d.e_pass,'err');
+  if(!isLogin&&!$('chk').checked)return setMsg('msg',d.e_agree,'err');
+  if(!supa)return setMsg('msg',d.load_err,'err');
+  btn.disabled=true;setMsg('msg',d.p_ing,'info');
+  try{
+    if(isLogin){
+      const{error}=await supa.auth.signInWithPassword({email,password:pass});
+      if(error)setMsg('msg',error.message,'err');
+      else{
+        setMsg('msg',d.s_login,'suc');
+        setTimeout(()=>showToast(d.s_login),800);
+      }
+    }else{
+      const{error}=await supa.auth.signUp({email,password:pass});
+      if(error)setMsg('msg',error.message,'err');
+      else setMsg('msg',d.s_reg,'suc');
+    }
+  }finally{btn.disabled=false}
+}
+
+function showForgot(){
+  $('auth').classList.add('hidden');
+  $('resetSec').classList.remove('hidden');
+  $('remail').value=$('email').value.trim();
+  $('fmsg').textContent='';
+}
+
+function back(){
+  $('resetSec').classList.add('hidden');
+  $('auth').classList.remove('hidden');
+  $('remail').value='';
+  $('fmsg').textContent='';
+}
+
+async function sendReset(){
+  const email=$('remail').value.trim(),d=T[cur],btn=$('rbtn');
+  if(!email)return setMsg('fmsg',d.e_empty,'err');
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))return setMsg('fmsg',d.e_email,'err');
+  if(!supa)return setMsg('fmsg',d.load_err,'err');
+  btn.disabled=true;setMsg('fmsg',d.p_ing,'info');
+  try{
+    const{error}=await supa.auth.resetPasswordForEmail(email,{redirectTo:window.location.href.split('#')[0]});
+    if(error)setMsg('fmsg',error.message,'err');
+    else setMsg('fmsg',d.s_sent,'suc');
+  }finally{btn.disabled=false}
+}
+
+document.addEventListener('DOMContentLoaded',()=>{
+  document.documentElement.setAttribute('data-theme',localStorage.getItem('theme')||'light');
+  document.getElementById('lang').value=cur;setLang(cur);
+  if(!supa){
+    setTimeout(()=>showToast(T[cur].load_err),500);
+  }
+});
 </script>
 </body>
 </html>
