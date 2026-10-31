@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Reliable intelligence</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    :root {
+      --bg-color: #f6f8fa; --card-bg: #ffffff; --text-main: #1f2328; --text-muted: #656d76;
+      --border-color: #d0d7de; --primary: #1f883d; --primary-hover: #1a7f37;
+      --danger: #cf222e; --input-bg: #ffffff; --btn-secondary: #f6f8fa;
+      --btn-secondary-border: #d0d7de; --btn-secondary-text: #24292f; --link-color: #0969da;
+    }
+    [data-theme="dark"] {
+      --bg-color: #0d1117; --card-bg: #161b22; --text-main: #c9d1d9; --text-muted: #8b949e;
+      --border-color: #30363d; --primary: #238636; --primary-hover: #2ea043;
+      --danger: #da3633; --input-bg: #0d1117; --btn-secondary: #21262d;
+      --btn-secondary-border: #30363d; --btn-secondary-text: #c9d1d9; --link-color: #58a6ff;
+    }
+    * { box-sizing: border-box; transition: background-color 0.2s, color 0.2s; }
+    body { background-color: var(--bg-color); color: var(--text-main); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; padding: 20px; margin: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+    .container { width: 100%; max-width: 420px; margin-top: 5vh; }
+    
+    .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+    .brand-title { font-size: 18px; font-weight: 700; letter-spacing: -0.3px; color: var(--text-main); }
+    .theme-btn { background: transparent; border: none; color: var(--text-muted); cursor: pointer; padding: 8px; border-radius: 6px; display: flex; }
+    .theme-btn:hover { background-color: var(--btn-secondary); }
+    
+    .card { background: var(--card-bg); padding: 24px; border-radius: 8px; border: 1px solid var(--border-color); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+    h2 { margin-top: 0; margin-bottom: 6px; font-size: 20px; font-weight: 600; text-align: center; }
+    .subtitle { text-align: center; color: var(--text-muted); font-size: 13px; margin-bottom: 20px; }
+    
+    input[type="email"], input[type="password"] { width: 100%; padding: 10px 12px; margin-bottom: 14px; background: var(--input-bg); border: 1px solid var(--border-color); border-radius: 6px; color: var(--text-main); font-size: 14px; outline: none; }
+    input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(31,136,61,0.15); }
+    
+    button { width: 100%; padding: 11px; background: var(--primary); color: #fff; border: none; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 6px; }
+    button:hover { background: var(--primary-hover); }
+    
+    .link-row { display: flex; justify-content: space-between; margin-top: 14px; font-size: 13px; }
+    .link-row a { color: var(--link-color); text-decoration: none; cursor: pointer; }
+    .link-row a:hover { text-decoration: underline; }
+    
+    .agreement-box { display: flex; align-items: flex-start; gap: 8px; margin-top: 16px; font-size: 12px; color: var(--text-muted); line-height: 1.5; }
+    .agreement-box input[type="checkbox"] { margin-top: 2px; appearance: none; width: 14px; height: 14px; border: 1px solid var(--border-color); border-radius: 3px; background: var(--input-bg); cursor: pointer; flex-shrink: 0; position: relative; }
+    .agreement-box input[type="checkbox"]:checked { background: var(--primary); border-color: var(--primary); }
+    .agreement-box input[type="checkbox"]:checked::after { content: ''; position: absolute; left: 3px; top: 0px; width: 3px; height: 7px; border: solid #fff; border-width: 0 2px 2px 0; transform: rotate(45deg); }
+    .agreement-box a { color: var(--link-color); text-decoration: none; font-weight: 500; }
+    
+    #msg { text-align: center; margin-top: 12px; font-size: 13px; color: var(--danger); min-height: 18px; }
+    .hidden { display: none !important; }
+    svg { width: 16px; height: 16px; fill: currentColor; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="top-bar">
+    <div class="brand-title">Reliable intelligence</div>
+    <button class="theme-btn" onclick="toggleTheme()" title="切换主题">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+    </button>
+  </div>
+
+  <div id="auth-section" class="card">
+    <h2 id="auth-title">登录系统</h2>
+    <div class="subtitle" id="auth-subtitle">欢迎回来，请输入您的账户信息</div>
+    
+    <input type="email" id="email" placeholder="邮箱地址">
+    <input type="password" id="password" placeholder="密码">
+    
+    <button id="auth-btn" onclick="handleAuth()">登 录</button>
+    
+    <div class="link-row">
+      <a onclick="toggleAuthMode()" id="switch-text">没有账号？去注册</a>
+      <a id="forgot-text" onclick="showForgotPassword()">忘记密码？</a>
+    </div>
+    
+    <div class="agreement-box hidden" id="agreement-wrap">
+      <input type="checkbox" id="agree-check">
+      <label for="agree-check">我已阅读并同意 <a onclick="showDisclaimer()">《免责声明》</a> 与 <a onclick="showPrivacy()">《隐私政策》</a>。本系统仅供娱乐与学习交流使用。</label>
+    </div>
+    
+    <div id="msg"></div>
+  </div>
+
+  <div id="forgot-section" class="card hidden">
+    <h2>找回密码</h2>
+    <div class="subtitle">输入您注册时的邮箱，我们将发送重置链接</div>
+    <input type="email" id="reset-email" placeholder="邮箱地址">
+    <button onclick="sendResetEmail()">发送重置邮件</button>
+    <div class="link-row" style="justify-content: center; margin-top: 16px;">
+      <a onclick="backToLogin()">返回登录</a>
+    </div>
+    <div id="forgot-msg" style="text-align: center; margin-top: 12px; font-size: 13px; color: var(--text-muted); min-height: 18px;"></div>
+  </div>
+</div>
+
+<script>
+  // 【已经为你填好了专属密钥，直接运行】
+  const SUPABASE_URL = 'https://scgmqocuqvqvyjfiulhs.supabase.co'; 
+  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNjZ21xb2N1cXZxdnlqZml1bGhzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM0MjI4MTksImV4cCI6MjEwODk5ODgxOX0.ICnjyfyYOgU840L_inw3nDiXjH6of3gk6-6V2ETNypo';
+
+  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  let isLoginMode = true;
+
+  const savedTheme = localStorage.getItem('theme') || 'light';
+  document.documentElement.setAttribute('data-theme', savedTheme);
+
+  function toggleTheme() {
+    const current = document.documentElement.getAttribute('data-theme');
+    const next = current === 'light' ? 'dark' : 'light';
+    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+  }
+
+  function toggleAuthMode() {
+    isLoginMode = !isLoginMode;
+    document.getElementById('auth-title').innerText = isLoginMode ? '登录系统' : '注册账号';
+    document.getElementById('auth-subtitle').innerText = isLoginMode ? '欢迎回来，请输入您的账户信息' : '创建您的专属账户';
+    document.getElementById('auth-btn').innerText = isLoginMode ? '登 录' : '注 册';
+    document.getElementById('switch-text').innerText = isLoginMode ? '没有账号？去注册' : '已有账号？去登录';
+    
+    document.getElementById('forgot-text').style.display = isLoginMode ? 'block' : 'none';
+    document.getElementById('agreement-wrap').classList.toggle('hidden', isLoginMode);
+    
+    document.getElementById('msg').innerText = '';
+  }
+
+  async function handleAuth() {
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+    const msgEl = document.getElementById('msg');
+    
+    if (!isLoginMode && !document.getElementById('agree-check').checked) {
+      msgEl.innerText = '请先阅读并勾选同意《免责声明》';
+      return;
+    }
+    
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email) { msgEl.innerText = '请输入邮箱地址'; return; }
+    if (!emailRegex.test(email)) { msgEl.innerText = '邮箱格式不正确'; return; }
+    if (!password) { msgEl.innerText = '请输入密码'; return; }
+    if (password.length < 6) { msgEl.innerText = '密码至少需要6位'; return; }
+    
+    msgEl.style.color = 'var(--text-muted)';
+    msgEl.innerText = '处理中...';
+
+    if (isLoginMode) {
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) {
+        msgEl.style.color = 'var(--danger)';
+        msgEl.innerText = error.message === 'Invalid login credentials' ? '邮箱或密码错误，或尚未验证' : error.message;
+      } else {
+        msgEl.style.color = 'var(--primary)';
+        msgEl.innerText = '登录成功！即将进入系统...';
+        setTimeout(() => alert('登录成功！控制面板待开发...'), 800);
+      }
+    } else {
+      const { data, error } = await supabase.auth.signUp({ email, password });
+      if (error) {
+        msgEl.style.color = 'var(--danger)';
+        msgEl.innerText = '注册失败：' + error.message;
+      } else {
+        msgEl.style.color = 'var(--primary)';
+        msgEl.innerText = '注册成功！请前往邮箱点击验证链接。';
+      }
+    }
+  }
+
+  function showForgotPassword() {
+    document.getElementById('auth-section').classList.add('hidden');
+    document.getElementById('forgot-section').classList.remove('hidden');
+    document.getElementById('reset-email').value = document.getElementById('email').value.trim();
+    document.getElementById('forgot-msg').innerText = '';
+  }
+
+  function backToLogin() {
+    document.getElementById('forgot-section').classList.add('hidden');
+    document.getElementById('auth-section').classList.remove('hidden');
+  }
+
+  async function sendResetEmail() {
+    const email = document.getElementById('reset-email').value.trim();
+    const msgEl = document.getElementById('forgot-msg');
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!email) { msgEl.innerText = '请输入邮箱地址'; return; }
+    if (!emailRegex.test(email)) { msgEl.innerText = '邮箱格式不正确'; return; }
+
+    msgEl.style.color = 'var(--text-muted)';
+    msgEl.innerText = '发送中...';
+
+    const currentUrl = window.location.href.split('#')[0];
+
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: currentUrl
+    });
+
+    if (error) {
+      msgEl.style.color = 'var(--danger)';
+      msgEl.innerText = '发送失败：' + error.message;
+    } else {
+      msgEl.style.color = 'var(--primary)';
+      msgEl.innerText = '如果该邮箱已注册，重置链接已发送。请查收邮件。';
+    }
+  }
+
+  supabase.auth.onAuthStateChange(async (event, session) => {
+    if (event === 'PASSWORD_RECOVERY') {
+      const newPassword = prompt('检测到您正在重置密码，请输入您的新密码（至少6位）：');
+      if (newPassword && newPassword.length >= 6) {
+        const { error } = await supabase.auth.updateUser({ password: newPassword });
+        if (error) {
+          alert('密码重置失败：' + error.message);
+        } else {
+          alert('✅ 密码重置成功！请使用新密码重新登录。');
+          window.location.href = window.location.href.split('#')[0];
+        }
+      } else if (newPassword) {
+        alert('密码不符合要求，操作已取消。');
+      }
+    }
+  });
+
+  function showDisclaimer() {
+    alert('【Reliable intelligence 免责声明】\n\n1. 仅供娱乐与学习：本系统主要用于个人学习、技术演示与娱乐交流，不构成任何专业建议。\n2. 数据安全：请勿在系统中存入极其敏感的个人隐私数据。\n3. 风险承担：使用本系统产生的任何风险由用户自行承担。');
+  }
+
+  function showPrivacy() {
+    alert('【Reliable intelligence 隐私政策】\n\n1. 信息收集：仅收集您的邮箱地址用于登录验证和密码找回。\n2. 数据存储：密码通过加密存储，我们无法查看明文密码。\n3. 数据共享：我们不会将您的邮箱信息共享给任何第三方。');
+  }
+</script>
+</body>
+</html>
